@@ -1,0 +1,22 @@
+# Data — never commit real claims data
+*.csv
+*.tsv
+*.parquet
+data/
+
+# Secrets / connection config
+.env
+*.tdcredentials
+config.local.*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
