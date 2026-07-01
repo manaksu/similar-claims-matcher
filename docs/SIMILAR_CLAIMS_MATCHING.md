@@ -48,16 +48,22 @@ Align these to the **Primary Index / partitioning** so the pool stays AMP-local.
 | Parameter | Professional | Facility — Inpatient | Facility — Outpatient |
 |---|---|---|---|
 | **DRG** (MS-/APR-) | — | **0.40** | — |
-| Procedure (CPT/HCPCS, or ICD-10-PCS) | 0.35 | 0.10 (PCS overlap) | 0.30 (HCPCS) |
+| Procedure (CPT/HCPCS, or ICD-10-PCS) | 0.30 | 0.05 (PCS overlap) | 0.30 (HCPCS) |
 | **Revenue-code set** (Jaccard) | — | 0.15 | 0.25 |
 | Diagnosis (principal / set overlap) | 0.25 | 0.15 | 0.15 |
 | **Type of Bill** | — | 0.10 | 0.15 |
 | Provider (NPI → specialty fallback) | 0.20 | 0.05 | 0.05 |
 | Place of Service | 0.10 | — | — |
+| **Line count** proximity | 0.05 | 0.05 | 0.05 |
 | Length of stay proximity | — | 0.05 | — |
-| Temporal / billed-amount closeness | 0.10 | — | 0.10 |
+| Temporal / billed-amount closeness | 0.10 | — | 0.05 |
 
-Weights are starting defaults — tune against real data.
+Weights are starting defaults, each column sums to 1.0 — tune against real data.
+
+**Line count** = number of service/detail lines on the claim (professional service
+lines; facility revenue-code lines). It captures encounter *scope/complexity* — a
+3-line claim vs a 40-line claim are structurally different even when the codes match.
+Scored as proximity (closer counts → higher score), capped so large gaps saturate.
 
 ---
 
