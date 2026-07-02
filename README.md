@@ -26,6 +26,7 @@ sql/     Query templates
            # Mode A — service-level match (default)
            professional_service_match.sql          837P: proc + dx tiers
            facility_inpatient_service_match.sql    837I IP: DRG + dx tiers
+           facility_inpatient_service_match_nodrg.sql  837I IP without DRG: PCS/dx
            facility_outpatient_service_match.sql   837I OP: HCPCS + dx tiers
            # Mode B — weighted score
            professional_top10.sql                  837P

@@ -46,6 +46,15 @@ tightest tier down — rare combos never come back empty, common combos break ti
 preference (same provider/facility first) then recency. The service field
 (procedure / DRG / HCPCS) is always a hard requirement; only the diagnosis loosens.
 
+**No-DRG variant (inpatient).** DRG is *derived* — a grouper assigns it from
+principal dx + principal ICD-10-PCS + discharge status. If the data dictionary has
+no DRG, match on its inputs, branched the same way the grouper splits stays:
+**surgical** (principal PCS present) → service = principal PCS; **medical** (no PCS)
+→ service = principal-dx category. See
+`sql/facility_inpatient_service_match_nodrg.sql`. Switch to the DRG template once
+DRG lands in the dictionary. (Mode B equivalent: drop the 0.40 DRG term and
+redistribute across principal PCS, dx, and the rev-code Jaccard.)
+
 ### Mode B — weighted score
 
 Pattern = **both**: hard filters define a **candidate pool**, then a **weighted
