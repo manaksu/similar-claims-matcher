@@ -21,6 +21,33 @@ claims warehouse (Teradata). Deterministic, SQL-based, explainable. Covers both
 - **Push the work to the data** — Teradata is MPP. Matching in SQL means you never
   extract millions of rows to score them client-side.
 
+**Two match modes ship side by side:**
+
+| Mode | Files | When to use |
+|---|---|---|
+| **Service-level match** (recommended default) | `sql/*_service_match.sql` | Everyday inquiry. Similar = same service for the same reason. Explainable in one sentence. |
+| **Weighted score** | `sql/*_top10.sql` | When finer ranking is needed (many near-identical candidates, or "similar" must weigh provider/amount/structure). |
+
+### Mode A — service-level match (default)
+
+Similar = **same service (procedure / DRG / HCPCS) for the same reason (diagnosis)**.
+No weights, no tuning. Demographics (age/sex/member attributes) are deliberately
+ignored — the procedure already implies them.
+
+Exact proc + dx can be *too* selective (rare combos) or leave thousands of ties
+(common combos). Both are solved by a **match tier** computed in one scan:
+
+- **tier 1** — same procedure + same diagnosis
+- **tier 2** — same procedure + same diagnosis *category* (ICD-10 first 3 chars)
+- **tier 3** — same procedure only
+
+Ordering `ORDER BY match_tier, <preference>, dos DESC` fills the top 10 from the
+tightest tier down — rare combos never come back empty, common combos break ties by
+preference (same provider/facility first) then recency. The service field
+(procedure / DRG / HCPCS) is always a hard requirement; only the diagnosis loosens.
+
+### Mode B — weighted score
+
 Pattern = **both**: hard filters define a **candidate pool**, then a **weighted
 score** ranks within it and you keep the top N.
 
@@ -28,6 +55,8 @@ score** ranks within it and you keep the top N.
 - Non-match should **exclude** the claim → it's a **hard filter**.
 - Non-match should just **rank it lower** → it's a **score term**.
 - (A field can be both: filter to the *family*, score the *exact* value within it.)
+
+Sections 2–4 below describe Mode B; Mode A needs no further spec than the above.
 
 ---
 
